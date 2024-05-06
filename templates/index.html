@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Visualization</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .main-content{
+            display: flex;
+        }
+
+        .chart-container {
+            width: 33%;
+            border: 1px solid black;
+            margin: 20px auto;
+            padding: 20px;
+    
+            display: flex; 
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .chart-size {
+            width: 50%;
+            height: auto;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Dataset</h1>
+    <!-- Render the dataset table -->
+    <table>
+        {% for row in data %}
+        <tr>
+            {% for item in row %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h1>Dataset Visualization</h1>
+    <div class="main-content">
+        <!-- Create a canvas element for the line chart -->
+        <div class="chart-container">
+            <div class="chart-size">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+        <!-- Create a canvas element for the bar chart -->
+        <div class="chart-container">
+            <div class="chart-size">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+        <!-- Create a canvas element for the scatter plot -->
+        <div class="chart-container">
+            <div class="chart-size">
+                <canvas id="scatterPlot"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load the dataset from the server
+        var data = {{ data | safe }};
+
+        // Extract labels and data from the dataset
+        var labels = data[0];
+        var values = data.slice(1);
+
+        // Line chart
+        var ctxLine = document.getElementById('lineChart').getContext('2d');
+        var lineChart = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Line Chart',
+                    data: values[0],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        // Bar chart
+        var ctxBar = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Bar Chart',
+                    data: values[1],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        // Scatter plot
+        var ctxScatter = document.getElementById('scatterPlot').getContext('2d');
+        var scatterChart = new Chart(ctxScatter, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Scatter Plot',
+                    data: values[3],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom'
+                    }]
+                }
+            }
+        });
+        
+    </script>
+</body>
+</html>
